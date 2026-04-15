@@ -1,5 +1,27 @@
 const socket = io();
+// =========================
+// 🔹 TEMA LIGHT/DARK
+// =========================
+const themeBtn = document.getElementById("theme-toggle");
 
+// carregar preferência salva
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    themeBtn.innerText = "Light ☀️";
+}
+
+// clique
+themeBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeBtn.innerText = "Light ☀️";
+    } else {
+        localStorage.setItem("theme", "light");
+        themeBtn.innerText = "Dark 🌙";
+    }
+});
 // =========================
 // 🔹 ELEMENTOS UI
 // =========================
@@ -124,7 +146,7 @@ pttBtn.addEventListener("click", () => {
         mediaRecorder.start();
         isRecording = true;
 
-        statusText.innerText = "🎤 Gravando...";
+        statusText.innerText = "🎤 Gravando... Clique para enviar";
         pttBtn.classList.add("recording");
 
         socket.emit("start_talking");

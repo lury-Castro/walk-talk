@@ -13,10 +13,15 @@
 </head>
 <body>
 
+    <!-- BOTÃO TEMA -->
+    <button id="theme-toggle">Dark 🌙</button>
+
     <!-- LOGIN -->
     <div id="login-area">
-        <h2>🎧 AdarTalk</h2>
-        <p style="margin-bottom:15px; color:#94a3b8;">Comunicação instantânea</p>
+        <h2>🎧 Adar Talk</h2>
+        <p style="color:#64748b; margin-bottom:15px;">
+            Comunicação interna em tempo real
+        </p>
 
         <input type="text" id="username" placeholder="Seu nome ou setor">
 
@@ -24,17 +29,18 @@
     </div>
 
     <!-- RÁDIO -->
-    
     <div id="radio-area" class="hidden">
-        <h3>Clique para gravar o Audio</h3>
-        <!-- Usuário falando -->
-        <div class="speaker-info" id="speaker-display"></div>
+        <h3>Clique para começar a gravar</h3>
+        <!-- QUEM ESTÁ FALANDO -->
+        <div class="speaker-info" id="speaker-display">
+            🔊 Canal Geral
+        </div>
 
-        <!-- BOTÃO PTT -->
+        <!-- BOTÃO -->
         <button id="ptt-btn"></button>
 
         <!-- STATUS -->
-        <p id="status">Pronto</p>
+        <p id="status">🎤 Clique pra gravar</p>
 
     </div>
 

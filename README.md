@@ -22,9 +22,11 @@ Sistema de comunicação Push-to-Talk (PTT) em tempo real usando Python, Flask-S
 
 🔹 Fluxo completo funcionando:
 
-usuário entra
-entra na sala
-servidor detecta outro usuário
-manda create_offer
-browsers conectam direto
-áudio flui P2P
+usuário informa seu nome :
+![Login](image.png)
+
+usuario clica pra começar a gravar:
+![Home](image-1.png)
+
+usuario clica pra enviar audio:
+![Send](image-2.png)
