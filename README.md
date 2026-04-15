@@ -18,3 +18,13 @@ Sistema de comunicação Push-to-Talk (PTT) em tempo real usando Python, Flask-S
 3. ìnicie na porta 5000: `ngrok http 5000`
 
 (Walkie-talkie funcional para tablets e PC)
+
+
+🔹 Fluxo completo funcionando:
+
+usuário entra
+entra na sala
+servidor detecta outro usuário
+manda create_offer
+browsers conectam direto
+áudio flui P2P

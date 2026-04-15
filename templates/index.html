@@ -1,96 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>Walkie-Talkie Adar</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adar Talk</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Socket.IO -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <style>
-        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        #ptt-btn { width: 220px; height: 220px; border-radius: 50%; border: 12px solid #333; background: #c0392b; color: white; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; display: none; }
-        #ptt-btn:active { background: #27ae60; border-color: #2ecc71; }
-        #login-area { background: #333; padding: 20px; border-radius: 10px; }
-        input { padding: 10px; border-radius: 5px; border: none; margin-bottom: 10px; width: 80%; }
-        .speaker-info { font-size: 24px; color: #f1c40f; margin-bottom: 20px; height: 30px; }
-    </style>
 </head>
 <body>
 
+    <!-- LOGIN -->
     <div id="login-area">
-        <h3>Identificação</h3>
-        <input type="text" id="username" placeholder="Seu nome ou Setor">
-        <br>
-        <button onclick="startApp()" style="padding: 10px 20px;">Entrar no Rádio</button>
+        <h2>🎧 AdarTalk</h2>
+        <p style="margin-bottom:15px; color:#94a3b8;">Comunicação instantânea</p>
+
+        <input type="text" id="username" placeholder="Seu nome ou setor">
+
+        <button id="start-btn">Entrar</button>
     </div>
 
-    <div id="radio-area" style="display:none;">
+    <!-- RÁDIO -->
+    
+    <div id="radio-area" class="hidden">
+        <h3>Clique para gravar o Audio</h3>
+        <!-- Usuário falando -->
         <div class="speaker-info" id="speaker-display"></div>
-        <button id="ptt-btn">SEGURE PARA FALAR</button>
-        <p id="status">Câmbio</p>
+
+        <!-- BOTÃO PTT -->
+        <button id="ptt-btn"></button>
+
+        <!-- STATUS -->
+        <p id="status">Pronto</p>
+
     </div>
 
-<script>
-    const socket = io();
-    let audioContext;
-    let processor;
-    let recording = false;
-    let myName = "";
+    <!-- SCRIPT -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    function startApp() {
-        myName = document.getElementById('username').value;
-        if (!myName) return alert("Digite seu nome!");
-        
-        document.getElementById('login-area').style.display = 'none';
-        document.getElementById('radio-area').style.display = 'block';
-        document.getElementById('ptt-btn').style.display = 'block';
-        
-        initAudio();
-    }
-
-    async function initAudio() {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const microphone = audioContext.createMediaStreamSource(stream);
-        processor = audioContext.createScriptProcessor(4096, 1, 1);
-
-        processor.onaudioprocess = (e) => {
-            if (recording) {
-                const inputData = e.inputBuffer.getChannelData(0);
-                // Enviamos o áudio E o nome
-                socket.emit('audio_data', {
-                    audio: inputData.buffer,
-                    username: myName
-                });
-            }
-        };
-
-        microphone.connect(processor);
-        processor.connect(audioContext.destination);
-    }
-
-    const btn = document.getElementById('ptt-btn');
-    btn.addEventListener('pointerdown', () => { recording = true; document.getElementById('status').innerText = "🎤 TRANSMITINDO..."; });
-    btn.addEventListener('pointerup', () => { recording = false; document.getElementById('status').innerText = "Câmbio"; });
-
-    // RECEBER ÁUDIO E NOME
-    socket.on('audio_stream', (payload) => {
-        if (!audioContext) return;
-        
-        // Exibe quem está falando
-        const display = document.getElementById('speaker-display');
-        display.innerText = "📢 " + payload.username + " falando...";
-        
-        const floatData = new Float32Array(payload.audio);
-        const audioBuffer = audioContext.createBuffer(1, floatData.length, 16000);
-        audioBuffer.getChannelData(0).set(floatData);
-        
-        const source = audioContext.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(audioContext.destination);
-        source.start();
-
-        // Limpa o nome da tela após 1 segundo sem áudio
-        source.onended = () => { setTimeout(() => { display.innerText = ""; }, 1000); };
-    });
-</script>
 </body>
 </html>

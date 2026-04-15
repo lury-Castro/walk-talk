@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* CONTAINER */
+#login-area, #radio-area {
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 20px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    animation: fadeIn 0.5s ease;
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 15px;
+    background: #0f172a;
+    color: white;
+    font-size: 15px;
+}
+
+/* BOTÃO ENTRAR */
+#start-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #22c55e;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#start-btn:hover {
+    background: #16a34a;
+}
+
+/* BOTÃO PTT */
+#ptt-btn {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle, #ef4444, #7f1d1d);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+    cursor: pointer;
+    margin: 20px auto;
+    transition: all 0.2s ease;
+}
+
+/* HOVER */
+#ptt-btn:hover {
+    transform: scale(1.05);
+}
+
+/* GRAVANDO */
+#ptt-btn.recording {
+    background: radial-gradient(circle, #22c55e, #14532d);
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.8);
+    animation: pulse 1s infinite;
+}
+
+/* TEXTO */
+#status {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.speaker-info {
+    height: 24px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #facc15;
+    transition: 0.3s;
+}
+
+/* ANIMAÇÕES */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
