@@ -1,27 +1,12 @@
-const socket = io();
 // =========================
-// 🔹 TEMA LIGHT/DARK
+// 🔹 SOCKET (RECONEXÃO)
 // =========================
-const themeBtn = document.getElementById("theme-toggle");
-
-// carregar preferência salva
-if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark");
-    themeBtn.innerText = "Light ☀️";
-}
-
-// clique
-themeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-
-    if (document.body.classList.contains("dark")) {
-        localStorage.setItem("theme", "dark");
-        themeBtn.innerText = "Light ☀️";
-    } else {
-        localStorage.setItem("theme", "light");
-        themeBtn.innerText = "Dark 🌙";
-    }
+const socket = io({
+    reconnection: true,
+    reconnectionAttempts: 999,
+    reconnectionDelay: 1000
 });
+
 // =========================
 // 🔹 ELEMENTOS UI
 // =========================
@@ -35,6 +20,8 @@ const pttBtn = document.getElementById("ptt-btn");
 const statusText = document.getElementById("status");
 const speakerDisplay = document.getElementById("speaker-display");
 
+const themeBtn = document.getElementById("theme-toggle");
+
 // =========================
 // 🔹 VARIÁVEIS
 // =========================
@@ -45,15 +32,89 @@ let myName = "";
 let audioChunks = [];
 
 // =========================
+// 🔹 TEMA
+// =========================
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    themeBtn.innerText = "Light ☀️";
+}
+
+themeBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeBtn.innerText = "Light ☀️";
+    } else {
+        localStorage.setItem("theme", "light");
+        themeBtn.innerText = "Dark 🌙";
+    }
+});
+
+// =========================
+// 🔹 AUTO LOGIN
+// =========================
+window.addEventListener("load", () => {
+    const savedUser = localStorage.getItem("username");
+
+    if (savedUser) {
+        usernameInput.value = savedUser;
+        startBtn.click();
+    }
+});
+    
+// =========================
+// 🔹 LOGOUT
+// =========================
+const logoutBtn = document.getElementById("logout-btn");
+logoutBtn.addEventListener("click", () => {
+
+    // parar gravação se estiver falando
+    if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+    }
+
+    // avisar servidor
+    socket.emit("stop_talking");
+
+    // limpar dados
+    localStorage.removeItem("username");
+
+    // reset variáveis
+    myName = "";
+    audioChunks = [];
+
+    // voltar tela
+    radioArea.classList.add("hidden");
+    loginArea.classList.remove("hidden");
+
+    // limpar campo
+    usernameInput.value = "";
+
+    // reset UI
+    speakerDisplay.innerText = "";
+    statusText.innerText = "Pronto";
+
+    // 🔥 força reconexão limpa
+    socket.disconnect();
+    socket.connect();
+});
+
+// =========================
 // 🔹 LOGIN
 // =========================
 startBtn.addEventListener("click", async () => {
+
     myName = usernameInput.value.trim();
 
     if (!myName) {
         alert("Digite seu nome");
         return;
     }
+
+    // 💾 SALVA USUÁRIO
+    localStorage.setItem("username", myName);
 
     const room = "geral";
 
@@ -67,6 +128,10 @@ startBtn.addEventListener("click", async () => {
         socket.emit("join_room", { room });
 
         await initAudio();
+
+        // 🔓 libera áudio no mobile
+        const unlock = new Audio();
+        unlock.play().catch(() => {});
     });
 });
 
@@ -88,14 +153,12 @@ async function initAudio() {
             audioBitsPerSecond: 64000
         });
 
-        // 🔴 GUARDA OS PEDAÇOS
         mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
                 audioChunks.push(event.data);
             }
         };
 
-        // 🟢 ENVIA TUDO QUANDO PARA
         mediaRecorder.onstop = () => {
             const blob = new Blob(audioChunks, { type: "audio/webm" });
             audioChunks = [];
@@ -110,7 +173,7 @@ async function initAudio() {
 
             reader.readAsDataURL(blob);
 
-            statusText.innerText = "📢 Clik para Gravar";
+            statusText.innerText = "📢 Clique para gravar";
         };
 
         console.log("Microfone OK");
@@ -128,7 +191,6 @@ pttBtn.addEventListener("click", () => {
 
     if (!mediaRecorder) return;
 
-    // 🔴 PARAR
     if (isRecording) {
         mediaRecorder.stop();
         isRecording = false;
@@ -137,16 +199,13 @@ pttBtn.addEventListener("click", () => {
         pttBtn.classList.remove("recording");
 
         socket.emit("stop_talking");
-    }
-
-    // 🟢 GRAVAR
-    else {
-        audioChunks = []; // limpa antes de começar
+    } else {
+        audioChunks = [];
 
         mediaRecorder.start();
         isRecording = true;
 
-        statusText.innerText = "🎤 Gravando... Clique para enviar";
+        statusText.innerText = "🎤 Gravando...";
         pttBtn.classList.add("recording");
 
         socket.emit("start_talking");
@@ -154,31 +213,34 @@ pttBtn.addEventListener("click", () => {
 });
 
 // =========================
+// 🔹 NOTIFICAÇÃO
+// =========================
+if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+// =========================
 // 🔹 RECEBER ÁUDIO
 // =========================
-socket.on("audio_stream", (data) => {
-    try {
-        const audio = new Audio(data.audio);
-        audio.play().catch(() => { });
-
-        speakerDisplay.innerText = `📢 ${data.user} falando...`;
-
-        audio.onended = () => {
-            speakerDisplay.innerText = "";
-        };
-
-    } catch (e) {
-        console.error("Erro ao tocar áudio:", e);
-    }
-});
 socket.on("audio_stream", (data) => {
     console.log("Áudio recebido:", data);
 
     const audio = new Audio(data.audio);
 
-    audio.play()
-        .then(() => console.log("Tocando áudio"))
-        .catch(err => console.error("Erro ao tocar:", err));
+    audio.play().catch(() => {});
+
+    speakerDisplay.innerText = `📢 ${data.user} falando...`;
+
+    audio.onended = () => {
+        speakerDisplay.innerText = "";
+    };
+
+    // 🔔 notificação se estiver em segundo plano
+    if (document.hidden) {
+        new Notification("Adar Talk", {
+            body: `${data.user} enviou um áudio`
+        });
+    }
 });
 
 // =========================
@@ -186,7 +248,7 @@ socket.on("audio_stream", (data) => {
 // =========================
 socket.on("speaker_update", (data) => {
     if (data.user) {
-        speakerDisplay.innerText = `📢 ${data.user} falando...`;
+        speakerDisplay.innerText = `📢 ${data.user} gravando...`;
     } else {
         speakerDisplay.innerText = "";
     }

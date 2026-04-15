@@ -6,6 +6,7 @@
     --primary: #111;
     --accent: #22c55e;
     --shadow: rgba(0,0,0,0.2);
+    --bg-tnb: #
 }
 
 body.dark {
@@ -15,7 +16,8 @@ body.dark {
     --subtext: #94a3b8;
     --primary: #fff;
     --accent: #22c55e;
-    --shadow: rgba(255, 255, 255, 0.2);
+    --shadow: rgba(95, 119, 139, 0.2);
+    --bg-tnb: #
 
 }
 
@@ -27,7 +29,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 95vh;
     transition: 0.3s;
 }
 
@@ -77,6 +79,30 @@ input {
     transition: 0.2s;
 }
 
+/*BOTÃO LOGOUT*/ /* BOTÃO TEMA */
+
+#theme-toggle,
+#logout-btn {
+    background: var(--text);
+    color: var(--bg);
+
+    border: none;
+    padding: 10px 14px;
+
+    border-radius: 10px;
+    cursor: pointer;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+    transition: 0.2s;
+}
+
+#theme-toggle:hover,
+#logout-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
 /* GRAVANDO */
 #ptt-btn.recording {
     background: var(--accent);
@@ -94,20 +120,14 @@ input {
     margin-bottom: 10px;
     color: #f59e0b;
 }
-
-/* BOTÃO TEMA */
-#theme-toggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: var(--card);
-    border: none;
-    padding: 10px;
-    border-radius: 15px 0;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    background-color: var(--text);
-    color: var(--bg);
+#menu {
+    position: fixed;       /* 🔥 fixa na tela */
+    top: 20px;             /* distância do topo */
+    right: 20px;            /* distância da esquerda */
+    display: flex;
+    flex-direction: column; /* 🔥 deixa em coluna */
+    gap: 5px;              /* espaço entre botões */
+    z-index: 1000;          /* garante que fica por cima */
 }
 
 /* ANIMAÇÃO */
