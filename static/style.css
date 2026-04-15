@@ -5,6 +5,7 @@
     --subtext: #64748b;
     --primary: #111;
     --accent: #22c55e;
+    --shadow: rgba(0,0,0,0.2);
 }
 
 body.dark {
@@ -14,6 +15,8 @@ body.dark {
     --subtext: #94a3b8;
     --primary: #fff;
     --accent: #22c55e;
+    --shadow: rgba(255, 255, 255, 0.2);
+
 }
 
 /* BASE */
@@ -35,7 +38,7 @@ body {
     border-radius: 18px;
     width: 320px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px var(--shadow);
     transition: 0.3s;
 }
 

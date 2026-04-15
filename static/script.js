@@ -110,7 +110,7 @@ async function initAudio() {
 
             reader.readAsDataURL(blob);
 
-            statusText.innerText = "Pronto";
+            statusText.innerText = "📢 Clik para Gravar";
         };
 
         console.log("Microfone OK");
